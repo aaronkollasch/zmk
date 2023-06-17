@@ -45,7 +45,7 @@ if ZMK_WIDGET_MODS_STATUS
 
 config ZMK_WIDGET_MODS_STATUS_CHARACTERS
     string "Characters to show for each modifier, corresponding to Control/Shift/Alt/GUI respectively"
-    default "CSAG"
+    default "CASG"
 
 endif
 
