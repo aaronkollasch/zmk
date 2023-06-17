@@ -24,7 +24,7 @@ Definition files:
 | `CONFIG_ZMK_WIDGET_OUTPUT_STATUS`                  | bool   | Enable a widget to show the current output (USB/BLE)                                      | y       |
 | `CONFIG_ZMK_WIDGET_WPM_STATUS`                     | bool   | Enable a widget to show words per minute                                                  | n       |
 | `CONFIG_ZMK_WIDGET_MODS_STATUS`                    | bool   | Enable a widget to show active modifiers                                                  | n       |
-| `CONFIG_ZMK_WIDGET_MODS_STATUS_CHARACTERS`         | string | Characters to show for each modifier, corresponding to Control/Shift/Alt/GUI respectively | "CSAG"  |
+| `CONFIG_ZMK_WIDGET_MODS_STATUS_CHARACTERS`         | string | Characters to show for each modifier, corresponding to Control/Alt/Shift/GUI respectively | "CASG"  |
 
 Note that `CONFIG_ZMK_DISPLAY_INVERT` setting might not work as expected with custom status screens that utilize images.
 Note that WPM and modifiers widgets are both shown on the bottom right of the display and hence can conflict with each other.
