@@ -36,9 +36,9 @@ void set_mods_symbol(lv_obj_t *label, struct mods_status_state state) {
     LOG_DBG("mods changed to %i", state.mods);
     if (state.mods & (MOD_LCTL | MOD_RCTL))
         strncat(text, &MOD_CHARS[0], 1);
-    if (state.mods & (MOD_LSFT | MOD_RSFT))
-        strncat(text, &MOD_CHARS[1], 1);
     if (state.mods & (MOD_LALT | MOD_RALT))
+        strncat(text, &MOD_CHARS[1], 1);
+    if (state.mods & (MOD_LSFT | MOD_RSFT))
         strncat(text, &MOD_CHARS[2], 1);
     if (state.mods & (MOD_LGUI | MOD_RGUI))
         strncat(text, &MOD_CHARS[3], 1);
