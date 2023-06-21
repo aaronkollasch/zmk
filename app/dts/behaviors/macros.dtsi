@@ -91,5 +91,11 @@ name: name { \
             label = "MAC_PARAM_2TO2";
             #binding-cells = <0>;
         };
+
+        macro_pause_for_layer: macro_pause_for_layer {
+            compatible = "zmk,macro-pause-for-layer";
+            label = "MAC_WAIT_LAYER";
+            #binding-cells = <0>;
+        };
     };
 };
