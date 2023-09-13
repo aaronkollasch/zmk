@@ -20,11 +20,15 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/events/endpoint_selection_changed.h>
 #include <zmk/events/wpm_state_changed.h>
 #include <zmk/events/layer_state_changed.h>
+#include <zmk/events/keycode_state_changed.h>
 #include <zmk/usb.h>
 #include <zmk/ble.h>
 #include <zmk/endpoints.h>
 #include <zmk/keymap.h>
 #include <zmk/wpm.h>
+
+#define MOD_CHARS CONFIG_ZMK_WIDGET_MODS_STATUS_CHARACTERS
+#define MOD_CHARS_LEN (sizeof(MOD_CHARS) - 1)
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 
@@ -37,6 +41,7 @@ struct output_status_state {
 
 struct layer_status_state {
     uint8_t index;
+    uint8_t mods;
     const char *label;
 };
 
@@ -179,15 +184,25 @@ static void draw_bottom(lv_obj_t *widget, lv_color_t cbuf[], struct status_state
     lv_canvas_draw_rect(canvas, 0, 0, CANVAS_SIZE, CANVAS_SIZE, &rect_black_dsc);
 
     // Draw layer
+    char text[9] = {};
     if (state.layer_label == NULL) {
-        char text[9] = {};
-
-        sprintf(text, "LAYER %i", state.layer_index);
-
-        lv_canvas_draw_text(canvas, 0, 5, 68, &label_dsc, text);
+        sprintf(text, "LYR %i", state.layer_index);
     } else {
-        lv_canvas_draw_text(canvas, 0, 5, 68, &label_dsc, state.layer_label);
+        strncat(text, state.layer_label, sizeof(text) - 4 - 1);
     }
+
+    if (state.mods & (MOD_LCTL | MOD_RCTL | MOD_LALT | MOD_RALT | MOD_LSFT | MOD_RSFT | MOD_LGUI | MOD_RGUI))
+        strncat(text, " ", 1);
+    if (state.mods & (MOD_LCTL | MOD_RCTL))
+        strncat(text, &MOD_CHARS[0], 1);
+    if (state.mods & (MOD_LALT | MOD_RALT))
+        strncat(text, &MOD_CHARS[1], 1);
+    if (state.mods & (MOD_LSFT | MOD_RSFT))
+        strncat(text, &MOD_CHARS[2], 1);
+    if (state.mods & (MOD_LGUI | MOD_RGUI))
+        strncat(text, &MOD_CHARS[3], 1);
+
+    lv_canvas_draw_text(canvas, 0, 5, 68, &label_dsc, text);
 
     // Rotate canvas
     rotate_canvas(canvas, cbuf);
@@ -263,6 +278,7 @@ ZMK_SUBSCRIPTION(widget_output_status, zmk_ble_active_profile_changed);
 
 static void set_layer_status(struct zmk_widget_status *widget, struct layer_status_state state) {
     widget->state.layer_index = state.index;
+    widget->state.mods = state.mods;
     widget->state.layer_label = state.label;
 
     draw_bottom(widget->obj, widget->cbuf3, widget->state);
@@ -275,13 +291,14 @@ static void layer_status_update_cb(struct layer_status_state state) {
 
 static struct layer_status_state layer_status_get_state(const zmk_event_t *eh) {
     uint8_t index = zmk_keymap_highest_layer_active();
-    return (struct layer_status_state){.index = index, .label = zmk_keymap_layer_label(index)};
+    return (struct layer_status_state){.index = index, .mods = zmk_hid_get_explicit_mods(), .label = zmk_keymap_layer_label(index)};
 }
 
 ZMK_DISPLAY_WIDGET_LISTENER(widget_layer_status, struct layer_status_state, layer_status_update_cb,
                             layer_status_get_state)
 
 ZMK_SUBSCRIPTION(widget_layer_status, zmk_layer_state_changed);
+ZMK_SUBSCRIPTION(widget_layer_status, zmk_keycode_state_changed);
 
 static void set_wpm_status(struct zmk_widget_status *widget, struct wpm_status_state state) {
     for (int i = 0; i < 9; i++) {
