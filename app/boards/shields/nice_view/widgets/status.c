@@ -184,21 +184,21 @@ static void draw_bottom(lv_obj_t *widget, lv_color_t cbuf[], struct status_state
     lv_draw_rect_dsc_t rect_black_dsc;
     init_rect_dsc(&rect_black_dsc, LVGL_BACKGROUND);
     lv_draw_label_dsc_t label_dsc;
-    init_label_dsc(&label_dsc, LVGL_FOREGROUND, &lv_font_montserrat_14, LV_TEXT_ALIGN_CENTER);
+    init_label_dsc(&label_dsc, LVGL_FOREGROUND, &lv_font_montserrat_18, LV_TEXT_ALIGN_CENTER);
 
     // Fill background
     lv_canvas_draw_rect(canvas, 0, 0, CANVAS_SIZE, CANVAS_SIZE, &rect_black_dsc);
 
     // Draw layer
-    char text[9] = {};
+    char text[14] = {};
     if (state.layer_label == NULL) {
         sprintf(text, "LYR %i", state.layer_index);
     } else {
-        strncat(text, state.layer_label, sizeof(text) - 4 - 1);
+        strncat(text, state.layer_label, sizeof(text) - 5 - 1);
     }
 
     if (state.mods & (MOD_LCTL | MOD_RCTL | MOD_LALT | MOD_RALT | MOD_LSFT | MOD_RSFT | MOD_LGUI | MOD_RGUI))
-        strncat(text, " ", 1);
+        strncat(text, "\n", 1);
     if (state.mods & (MOD_LCTL | MOD_RCTL))
         strncat(text, &MOD_CHARS[0], 1);
     if (state.mods & (MOD_LALT | MOD_RALT))
@@ -338,7 +338,7 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     lv_obj_align(middle, LV_ALIGN_TOP_LEFT, 24, 0);
     lv_canvas_set_buffer(middle, widget->cbuf2, CANVAS_SIZE, CANVAS_SIZE, LV_IMG_CF_TRUE_COLOR);
     lv_obj_t *bottom = lv_canvas_create(widget->obj);
-    lv_obj_align(bottom, LV_ALIGN_TOP_LEFT, -44, 0);
+    lv_obj_align(bottom, LV_ALIGN_TOP_LEFT, -24, 0);
     lv_canvas_set_buffer(bottom, widget->cbuf3, CANVAS_SIZE, CANVAS_SIZE, LV_IMG_CF_TRUE_COLOR);
 
     sys_slist_append(&widgets, &widget->node);
